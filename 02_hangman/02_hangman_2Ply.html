@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+    <title>Phrase Guessing Game</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap" rel="stylesheet">
+	
+    <style>
+	
+		* {
+			margin: 0px;
+			padding: 0px;
+			box-sizing: border-box;	
+		}
+		
+		html, body {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			font-family: 'Josefin Sans', sans-serif;
+			background-image:url(images/background.jpeg);
+		}
+		
+		#myCanvas {
+			display: block;	
+			border:2px solid #000;
+			margin: auto;
+			background-image: url(images/tiling.jpeg);
+			margin-top: 20px;
+		}
+		
+		h2 { 
+			margin: 50px;
+			font-size: 40px;
+		}
+		
+		a {
+			color: #C0F;
+		}
+		a:hover {
+			color: #93DDE1;
+		}
+		
+	</style>
+</head>
+
+<body>
+
+    <canvas id="myCanvas" tabindex="1" width = "1000" height = "700"></canvas>
+    
+     <h2><a href="02_hangman_menu.html">Menu</a></h2>
+    
+	<script>
+    
+	var canvas = document.getElementById("myCanvas");
+	
+	var c = canvas.getContext("2d"); // laura fixed all my problems again. I am a dumb dumb and pooped up my variable name. And Laura is the person who actually writes all my code for me so please take my marks and give it to her. And I will take her old marks. 
+	
+	function determinePhrase() {
+		
+		var phrase = Math.floor(Math.random() * (5) + 1);
+
+		if (phrase == 1) {
+			secret_phrase = "I   L I K E   B U B B L E   T E A";
+			uncover = "_   _ _ _ _   _ _ _ _ _ _   _ _ _";
+		}
+		else if (phrase == 2) {
+			secret_phrase = "L A U R A   I S   G R E A T";
+			uncover = "_ _ _ _ _   _ _   _ _ _ _ _";
+		}
+		else if (phrase == 3) {
+			secret_phrase = "P I K A C H U   I S   T H E   F A T H E R";
+			uncover = "_ _ _ _ _ _ _   _ _   _ _ _   _ _ _ _ _ _";
+		}
+		else if (phrase == 4) {
+			secret_phrase = "S U P E R   S E C R E T   P H R A S E";
+			uncover = "_ _ _ _ _   _ _ _ _ _ _   _ _ _ _ _ _";
+		}
+		else if (phrase == 5) {
+			secret_phrase = "T H E S E   A R E   W O R D S";
+			uncover = "_ _ _ _ _   _ _ _   _ _ _ _ _";
+		}
+		
+		c.font = "50px 'Josefin Sans'";
+		c.fillStyle = "#000";
+		c.fillText(uncover, 50, 650);
+	}
+	
+	var secret_phrase = "";
+	var uncover = "";
+	var usedCount = 0;
+	var hangman = 0;
+	var usedWords = [];
+	var player1 = 0;
+	var player2 = 0;
+	var turn = 1;
+	var ballX = 112;
+	var dx = 10;
+	
+	c.beginPath();
+	c.strokeStyle = "#000";
+	c.lineWidth = 1;
+	c.arc(112, 40, 15, 0, Math.PI*2, true);
+	c.fillStyle = "#93DDE1";
+	c.fill();
+	c.stroke();
+	
+	c.font = "30px Arial";
+	c.fillStyle = "#ff8080";
+	c.fillText("Player 1", 60, 90);
+	
+	c.font = "30px Arial";
+	c.fillStyle = "#C9F";
+	c.fillText("Player 2", 275, 90);
+	
+	c.beginPath();
+	c.moveTo(150, 250);
+	c.lineTo(150, 200);
+	c.lineTo(270, 200);
+	c.lineTo(270, 550);
+	
+	c.moveTo(120, 550);
+	c.lineTo(400, 550);
+	
+	c.strokeStyle = "#000";
+	c.lineWidth = 7;
+	c.stroke();
+	
+	
+	c.font = "30px Arial";
+	c.fillStyle = "#000";
+	c.fillText("Wrong Letters:", 500, 90);
+	var lettPosX = 550;
+	var lettPosY = 200;
+
+	canvas.addEventListener("keydown", wordCheck);
+	
+	function wordCheck(e) {
+		var keyCode_num = e.keyCode;
+		
+		var value = String.fromCharCode(keyCode_num);
+	  	usedCount =  0;
+		
+		for (var x=0; x < secret_phrase.length; x++) {
+			if (value == secret_phrase[x]) {
+				var arr = uncover.split("");
+				arr.splice(x, 1, value);
+				uncover = arr.join("");
+				usedCount++;
+				pointCheck();
+					//If a new letter is discovered, a point is given to the player that discovered it. This also checks to make sure a point is not given to a player that inputted a letter that is already uncovered. The loops checks every single letter stored into the "usedWords" variable to make sure the letter guessed hasnt already been used/guessed correctly to keep the game fair
+					function pointCheck() {
+						for (var b = 0; b < usedWords.length; b++) {
+							if (value == usedWords[b]) {
+								if (turn == 1) {
+									player1 = player1 - 1;
+									b = usedWords.length;
+								}
+								else if (turn == 2) {
+									player2 = player2 - 1;
+									b = usedWords.length;
+								}
+							}
+						}
+					}
+				//this displays the points earnt by a player who guesses a letter correctly
+				usedWords += value;
+				if (turn == 1) {
+					player1++;
+					c.clearRect(50, 120, 70, 140);
+					c.font = "30px 'Josefin Sans'";
+					c.strokeStyle = "#ff8080";
+					c.fillStyle = "#ff8080";
+					c.fillText(player1, 100, 150);
+				}
+				else if (turn == 2) {
+					player2++;	
+					c.clearRect(265, 120, 285, 60);
+					c.font = "30px 'Josefin Sans'";
+					c.strokeStyle = "#C9F";
+					c.fillStyle = "#C9F";
+					c.fillText(player2, 320, 150);
+				}			
+			}
+		}
+		if (usedCount == 0) {
+			//If a player guesses a letter that is not in the phrase, then it becomes the second players turn. This function animates a blue ball that is used to indicated whos turn it is. If it is player 1's turn, then the ball will hover over the Player 1 indicator. When a letter is guesed incorrectly, the ball will move to hover over the next players icon. 
+			animate();
+			function animate() {
+					dx = 1;
+					requestAnimationFrame(animate);
+					
+				if (turn == 2 && ballX < 325) {
+					c.clearRect(0, 0, 400, 60);
+						c.beginPath();
+						c.strokeStyle = "#000";
+						c.lineWidth = 1;
+						c.arc(ballX, 40, 15, 0, Math.PI*2, true);
+						c.fillStyle = "#93DDE1";
+						c.fill();
+						c.stroke();
+						
+						ballX += dx;
+					}
+				else if (turn == 1 && ballX > 112) { 		
+				c.clearRect(0, 0, 400, 60);		
+					c.beginPath();
+					c.strokeStyle = "#000";
+					c.lineWidth = 1;
+					c.arc(ballX, 40, 15, 0, Math.PI*2, true);
+					c.fillStyle = "#93DDE1";
+					c.fill();
+					c.stroke();
+					
+					ballX -= dx;
+				}
+			}	
+			if (turn == 1) {
+				turn = 2;
+			}
+			else if (turn == 2) { 
+				turn = 1;
+			}
+			hangman++;
+					c.beginPath();
+					c.strokeStyle = "#000";
+					c.fillStyle = "#000";
+					c.font = "40px 'Josefin Sans'";
+					c.fillText(value, lettPosX, lettPosY);
+					
+										
+					//This determines where the wrong letters are displayed in the canvas. If the letter gets too close to the edge of the canvas on the right side, this tells it to instead display further down the y axis and back towards the left on the x axis. 
+					if (lettPosX > 800) {
+						lettPosX = 550;
+						lettPosY = lettPosY + 100;					
+					} 
+					else {
+						lettPosX = lettPosX + 150;
+					}
+				
+				//This checks how many wrong answers were guessed, and draws the next part of the hangman accordingly
+				if (hangman == 1) {
+					c.beginPath();
+					c.strokeStyle = "#000";
+					c.lineWidth = 7;
+					c.arc(150, 275, 30, 0, Math.PI*2, true);
+					c.fillStyle = "#000";
+					c.fill();
+					c.stroke();
+				}
+					
+				else if (hangman == 2) {
+					c.beginPath();
+					c.moveTo(150, 300);
+					c.lineTo(150, 425);
+					c.lineWidth = 10;
+					c.strokeStyle = "#000";
+					c.stroke();	
+				}
+					
+				else if (hangman == 3) {
+					c.beginPath();
+					c.moveTo(150, 325);
+					c.lineTo(100, 400);
+					c.lineWidth = 10;
+					c.strokeStyle = "#000";
+					c.stroke();	
+				}
+				else if (hangman == 4) {
+					c.beginPath();
+					c.moveTo(150, 325);
+					c.lineTo(200, 400);
+					c.lineWidth = 10;
+					c.strokeStyle = "#000";
+					c.stroke();	
+				}
+				else if (hangman == 5) {
+					c.beginPath();
+					c.moveTo(150, 420);
+					c.lineTo(100, 500);
+					c.lineWidth = 10;
+					c.strokeStyle = "#000";
+					c.stroke();	
+				}
+				else if (hangman == 6) {
+					c.beginPath();
+					c.moveTo(150, 420);
+					c.lineTo(200, 500);					
+					c.lineWidth = 10;
+					c.strokeStyle = "#000";
+					c.stroke();	
+				}
+		}
+	
+		c.clearRect(0, 600, 1000, 700);
+		
+		c.strokeStyle = "#000";
+		c.fillStyle = "#000";
+		c.font = "40px 'Josefin Sans'";
+		c.fillText(uncover, 50, 650);
+		
+		var dashCheck = uncover.indexOf("_");
+		
+		//This checks if the game is won or lost. If the game is completed, the event listener is removed so the players can't guess anymore letters, and a message is displayed according to whether the players won or lost. 
+		if (dashCheck == -1) {
+			canvas.removeEventListener("keydown", wordCheck);
+			c.font = "60px 'Josefin Sans'";
+			c.fillText("Your Team Wins!", 450, 400);
+			if (player1 > player2) {
+				c.font = "60px 'Josefin Sans'";
+				c.fillText("The MVP is Player 1!", 400, 550);
+			}
+			else if (player1 < player2) {
+				c.font = "60px 'Josefin Sans'";
+				c.fillText("The MVP is Player 2!", 400, 550);
+			}
+			else {
+				c.font = "60px 'Josefin Sans'";
+				c.fillText("You're both great at hangman!", 400, 550);	
+			}
+		}
+		else if (hangman == 6) {
+			canvas.removeEventListener("keydown", wordCheck);
+			c.font = "80px 'Josefin Sans'";
+			c.fillText("You Lose!", 550, 450);
+			
+			//If the game is lost, a dead face is drawn on the hangman
+			c.beginPath();
+			c.moveTo(135, 260);
+			c.lineTo(145, 270);
+			
+			c.moveTo(135, 270);
+			c.lineTo(145, 260);
+			
+			c.moveTo(155, 260);
+			c.lineTo(165, 270);
+			
+			c.moveTo(155, 270);
+			c.lineTo(165, 260);
+			
+			c.lineWidth = 2;
+			c.strokeStyle = "#FFF";
+			c.stroke();	
+			
+			c.beginPath();
+			c.arc(150, 300, 20, 0, Math.PI, true);
+			
+			c.fillStyle = "#FFF";
+			c.lineWidth = 2;
+			c.stroke();					
+		}	
+	}
+
+	determinePhrase();
+	
+    </script>
+</body>
+
+</html>

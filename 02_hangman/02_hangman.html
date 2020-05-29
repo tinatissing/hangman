@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+    <title>Phrase Guessing Game</title>
+    
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Sans&display=swap" rel="stylesheet">
+	
+    <style>
+	
+		* {
+			margin: 0px;
+			padding: 0px;
+			box-sizing: border-box;	
+		}
+		
+		html, body {
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+			font-family: 'Josefin Sans', sans-serif;
+			background-image:url(images/background.jpeg);
+		}
+		
+		#myCanvas {
+			display: block;	
+			border:2px solid #000;
+			margin: auto;
+			background-image: url(images/tiling.jpeg);
+			margin-top: 20px;
+		}
+		
+		h2 { 
+			margin: 50px;
+			font-size: 40px;
+		}
+		
+		a {
+			color: #C0F;	
+		}
+		a:hover {
+			color: #93DDE1;
+		}
+
+	</style>
+</head>
+
+<body>
+	
+    <canvas id="myCanvas" tabindex="1" width = "1000" height = "700"></canvas>
+    
+     <h2><a href="02_hangman_menu.html">Menu</a></h2>
+    
+	<script>
+    
+	var canvas = document.getElementById("myCanvas");
+	
+	var c = canvas.getContext("2d"); // laura fixed all my problems again. I am a dumb dumb and pooped up my variable name. And Laura is the person who actually writes all my code for me so please take my marks and give it to her. And I will take her old marks. 
+	
+	function determinePhrase() {
+		
+		var phrase = Math.floor(Math.random() * (5) + 1); // from lola
+
+		if (phrase == 1) {
+			secret_phrase = "I   L I K E   B U B B L E   T E A";
+			uncover = "_   _ _ _ _   _ _ _ _ _ _   _ _ _";
+		}
+		else if (phrase == 2) {
+			secret_phrase = "L A U R A   I S   G R E A T";
+			uncover = "_ _ _ _ _   _ _   _ _ _ _ _";
+		}
+		else if (phrase == 3) {
+			secret_phrase = "P I K A C H U   I S   T H E   F A T H E R";
+			uncover = "_ _ _ _ _ _ _   _ _   _ _ _   _ _ _ _ _ _";
+		}
+		else if (phrase == 4) {
+			secret_phrase = "S U P E R   S E C R E T   P H R A S E";
+			uncover = "_ _ _ _ _   _ _ _ _ _ _   _ _ _ _ _ _";
+		}
+		else if (phrase == 5) {
+			secret_phrase = "T H E S E   A R E   W O R D S";
+			uncover = "_ _ _ _ _   _ _ _   _ _ _ _ _";
+		}
+		
+		c.font = "50px 'Josefin Sans'";
+		c.fillStyle = "rgb(200, 0, 150)";
+		c.fillText(uncover, 50, 600);
+	}
+	
+	var secret_phrase = "";
+	var uncover = "";
+	var usedCount = 0;
+	var hangman = 0;
+	var usedWords = [];
+	
+	c.beginPath();
+	c.moveTo(150, 150);
+	c.lineTo(150, 100);
+	c.lineTo(270, 100);
+	c.lineTo(270, 450);
+	
+	c.moveTo(120, 450);
+	c.lineTo(400, 450);
+	
+	c.strokeStyle = "rgb(200, 0, 150)";
+	c.lineWidth = 7;
+	c.stroke();
+	
+	
+	c.font = "30px Arial";
+	c.fillStyle = "rgb(200, 0, 150)";
+	c.fillText("Wrong Letters:", 500, 100);
+	var lettPosX = 550;
+	var lettPosY = 200;
+
+	canvas.addEventListener("keydown", wordCheck);
+	
+	function wordCheck(e) {
+		var keyCode_num = e.keyCode;
+		
+		var value = String.fromCharCode(keyCode_num);
+	  	usedCount =  0;
+		
+		for (var x=0; x < secret_phrase.length; x++) {
+			if (value == secret_phrase[x]) {
+				var arr = uncover.split("");
+				arr.splice(x, 1, value);
+				uncover = arr.join("");
+				usedCount++;
+
+			}
+		}
+		
+		if (usedCount == 0) {
+			hangman++;
+					c.font = "40px 'Josefin Sans'";
+					c.fillText(value, lettPosX, lettPosY);
+
+					if (lettPosX > 800) {
+						lettPosX = 550;
+						lettPosY = lettPosY + 100;					
+					} 
+					else {
+						lettPosX = lettPosX + 150;
+					}
+				
+				if (hangman == 1) {
+					c.beginPath();
+					c.strokeStyle = "rgb(200, 0, 150)";
+					c.lineWidth = 7;
+					c.arc(150, 175, 30, 0, Math.PI*2, true);
+					c.fillStyle = "rgb(200, 0, 150)";
+					c.fill();
+					c.stroke();
+				}
+					
+				else if (hangman == 2) {
+					c.beginPath();
+					c.moveTo(150, 200);
+					c.lineTo(150, 325);
+					c.lineWidth = 10;
+					c.strokeStyle = "rgb(200, 0, 150)";
+					c.stroke();	
+				}
+					
+				else if (hangman == 3) {
+					c.beginPath();
+					c.moveTo(150, 225);
+					c.lineTo(100, 300);
+					c.lineWidth = 10;
+					c.strokeStyle = "rgb(200, 0, 150)";
+					c.stroke();	
+				}
+				else if (hangman == 4) {
+					c.beginPath();
+					c.moveTo(150, 225);
+					c.lineTo(200, 300);
+					c.lineWidth = 10;
+					c.strokeStyle = "rgb(200, 0, 150)";
+					c.stroke();	
+				}
+				else if (hangman == 5) {
+					c.beginPath();
+					c.moveTo(150, 320);
+					c.lineTo(100, 400);
+					c.lineWidth = 10;
+					c.strokeStyle = "rgb(200, 0, 150)";
+					c.stroke();	
+				}
+				else if (hangman == 6) {
+					c.beginPath();
+					c.moveTo(150, 320);
+					c.lineTo(200, 400);					
+					c.lineWidth = 10;
+					c.strokeStyle = "rgb(200, 0, 150)";
+					c.stroke();	
+				}
+		}
+	
+		c.clearRect(0, 500, 1000, 700);
+		c.font = "40px 'Josefin Sans'";
+		c.fillText(uncover, 50, 600);
+		
+		var dashCheck = uncover.indexOf("_");
+		
+		if (dashCheck == -1) {
+			canvas.removeEventListener("keydown", wordCheck);
+			c.font = "80px 'Josefin Sans'";
+			c.fillText("You Win!", 550, 450);
+			}
+		else if (hangman == 6) {
+			canvas.removeEventListener("keydown", wordCheck);
+			c.font = "80px 'Josefin Sans'";
+			c.fillText("You Lose!", 550, 450);
+			
+			c.beginPath();
+			c.moveTo(135, 160);
+			c.lineTo(145, 170);
+			
+			c.moveTo(135, 170);
+			c.lineTo(145, 160);
+			
+			c.moveTo(155, 160);
+			c.lineTo(165, 170);
+			
+			c.moveTo(155, 170);
+			c.lineTo(165, 160);
+			
+			c.lineWidth = 2;
+			c.strokeStyle = "#fff";
+			c.stroke();	
+			
+			c.beginPath();
+			c.arc(150, 200, 20, 0, Math.PI, true);
+			
+			c.fillStyle = "#fff";
+			c.lineWidth = 2;
+			c.stroke();					
+		}
+			
+	}
+	
+	determinePhrase();
+	
+    </script>
+</body>
+
+</html>
